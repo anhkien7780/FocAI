@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FocAI</string>
+    <string name="username">Tài khoản</string>
+    <string name="password">Mật khẩu</string>
+    <string name="enter_username">Nhập tên đăng nhập</string>
+    <string name="enter_password">Nhập mật khẩu</string>
 </resources>
