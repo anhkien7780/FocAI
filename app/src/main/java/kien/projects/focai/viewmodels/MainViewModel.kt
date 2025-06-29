@@ -1,14 +1,12 @@
 package kien.projects.focai.viewmodels
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.LaunchedEffect
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import kien.projects.focai.R
@@ -25,15 +23,7 @@ class MainViewModel : ViewModel() {
         if (Settings.canDrawOverlays(context)) {
             _startButtonState.value = !_startButtonState.value
         } else {
-            Toast.makeText(
-                context,
-                context.getString(R.string.please_grant_ovelay_permission),
-                Toast.LENGTH_LONG
-            ).show()
-            Handler(Looper.getMainLooper()).postDelayed({
-                checkOverlayPermission(context)
-            }, 2000)
-
+            checkOverlayPermission(context)
         }
     }
 
@@ -54,10 +44,18 @@ class MainViewModel : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun checkOverlayPermission(context: Context) {
-        val intent = Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            "package:${context.packageName}".toUri()
-        )
-        context.startActivity(intent)
+        AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.request_overlay_permission))
+            .setMessage(context.getString(R.string.grant_overlay_permission_message))
+            .setPositiveButton(context.getString(R.string.go_to_permission_manager)) { _, _ ->
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    "package:${context.packageName}".toUri()
+                )
+                startActivityForResult(context as android.app.Activity, intent, 0, null)
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+
     }
 }

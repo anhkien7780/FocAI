@@ -6,4 +6,7 @@
     <string name="enter_password">Nhập mật khẩu</string>
     <string name="please_grant_ovelay_permission">Vui lòng cấp quyền vẽ lên ứng dụng khác để ứng dụng hoạt động</string>
     <string name="app_list">Danh sách ứng dụng</string>
+    <string name="grant_overlay_permission_message">Ứng dụng cần quyền hiển thị cửa sổ trên ứng dụng khác để hoạt động. Vui lòng cấp quyền trong phần Cài đặt.</string>
+    <string name="request_overlay_permission">Yêu cầu quyền Overlay</string>
+    <string name="go_to_permission_manager">Đi đến cấp quyền</string>
 </resources>
