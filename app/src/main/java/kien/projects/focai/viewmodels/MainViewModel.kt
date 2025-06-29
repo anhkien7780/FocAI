@@ -9,14 +9,27 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kien.projects.focai.R
+import kien.projects.focai.datastore.PackageAppNameStore
 import kien.projects.focai.models.AppInfo
+import kien.projects.focai.models.LoadingUIState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
+    private val _loadingUIState: MutableStateFlow<LoadingUIState> =
+        MutableStateFlow(LoadingUIState.Idle)
     private val _startButtonState = MutableStateFlow(false)
+    private val _apps: MutableStateFlow<List<AppInfo>> = MutableStateFlow(emptyList())
+    private val _blockPackageApps: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
 
-    val startButtonState = _startButtonState
+    val loadingUIState = _loadingUIState.asStateFlow()
+
+    val apps = _apps.asStateFlow()
+    val blockPackageApps = _blockPackageApps.asStateFlow()
+    val startButtonState = _startButtonState.asStateFlow()
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun onStartButtonClicked(context: Context) {
@@ -27,19 +40,44 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getLauncherApps(context: Context): List<AppInfo> {
+    fun getLauncherApps(context: Context) {
         val pm = context.packageManager
         val intent = Intent(Intent.ACTION_MAIN, null).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
         }
-
         val apps = pm.queryIntentActivities(intent, 0)
-        return apps.map {
+        _apps.value = apps.map {
             AppInfo(
                 name = it.loadLabel(pm).toString(),
-                icon = AppInfo.drawableToImageBitmap(context = context, it.loadIcon(pm))
+                icon = AppInfo.drawableToImageBitmap(context = context, it.loadIcon(pm)),
+                packageName = it.activityInfo.packageName
             )
         }
+    }
+
+    fun getBlockPackageApps(context: Context) {
+        viewModelScope.launch {
+            _blockPackageApps.value =
+                PackageAppNameStore().getPackageAppNames(context) ?: emptyList()
+        }
+    }
+
+    fun addBlockPackageApp(context: Context, packageName: String) {
+        _blockPackageApps.value += packageName
+        viewModelScope.launch {
+            PackageAppNameStore().addPackageAppNames(context, _blockPackageApps.value)
+        }
+    }
+
+    fun removeBlockPackageApp(context: Context, packageName: String) {
+        _blockPackageApps.value -= packageName
+        viewModelScope.launch {
+            PackageAppNameStore().addPackageAppNames(context, _blockPackageApps.value)
+        }
+    }
+
+    fun setIdle() {
+        _loadingUIState.value = LoadingUIState.Idle
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -56,6 +94,5 @@ class MainViewModel : ViewModel() {
             }
             .setNegativeButton("Hủy", null)
             .show()
-
     }
 }

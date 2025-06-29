@@ -59,6 +59,13 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.kotlinx.serialization.json)
 
+    //DataStore
+    implementation(libs.androidx.datastore.preferences)
+
+    //Moshi
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -10,7 +10,8 @@ import androidx.core.graphics.createBitmap
 
 data class AppInfo(
     val name: String,
-    val icon: ImageBitmap
+    val icon: ImageBitmap,
+    val packageName: String
 ){
 
     companion object{

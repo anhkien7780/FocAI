@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,41 +39,58 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     navToAppList: () -> Unit = {}
 ) {
+    Scaffold { innerPadding ->
+        MainBody(
+            mainViewModel = mainViewModel,
+            modifier = modifier,
+            innerPadding = innerPadding,
+            navToAppList = navToAppList
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+@Composable
+fun MainBody(
+    mainViewModel: MainViewModel,
+    modifier: Modifier = Modifier,
+    innerPadding: PaddingValues,
+    navToAppList: () -> Unit = {},
+) {
     val context = LocalContext.current
     val startButtonState = mainViewModel.startButtonState.collectAsState()
-    Scaffold { innerPadding ->
-        Column(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+    Column(
+        modifier = modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        IconButton(
+            modifier = Modifier.size(200.dp),
+            onClick = {
+                mainViewModel.onStartButtonClicked(context)
+            }
         ) {
-            IconButton(
-                modifier = Modifier.size(200.dp),
-                onClick = {
-                    mainViewModel.onStartButtonClicked(context)
-                }
-            ) {
-                when (startButtonState.value) {
-                    false ->
-                        Icon(
+            when (startButtonState.value) {
+                false ->
+                    Icon(
                         modifier = Modifier.fillMaxSize(),
                         painter = painterResource(R.drawable.power_settings_new_90dp),
                         contentDescription = "Start Button"
                     )
-                    true -> Icon(
-                        modifier = Modifier.fillMaxSize(),
-                        painter = painterResource(R.drawable.stop_circle_90dp),
-                        contentDescription = "Stop Button"
-                    )
-                }
 
+                true -> Icon(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(R.drawable.stop_circle_90dp),
+                    contentDescription = "Stop Button"
+                )
             }
-            Spacer(Modifier.size(10.dp))
-            Button(onClick = {navToAppList()}) {
-                Text(stringResource(R.string.app_list))
-            }
+
+        }
+        Spacer(Modifier.size(10.dp))
+        Button(onClick = { navToAppList() }) {
+            Text(stringResource(R.string.app_list))
         }
     }
 }
