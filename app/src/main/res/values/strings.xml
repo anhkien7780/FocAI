@@ -4,4 +4,6 @@
     <string name="password">Mật khẩu</string>
     <string name="enter_username">Nhập tên đăng nhập</string>
     <string name="enter_password">Nhập mật khẩu</string>
+    <string name="please_grant_ovelay_permission">Vui lòng cấp quyền vẽ lên ứng dụng khác để ứng dụng hoạt động</string>
+    <string name="app_list">Danh sách ứng dụng</string>
 </resources>
